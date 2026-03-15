@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KK's 1st Birthday Itinerary</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sand: #f5f0e8;
+    --ocean: #1a5c6b;
+    --ocean-light: #2a8a9a;
+    --sunset: #e8a838;
+    --sunset-light: #f5d590;
+    --coral: #e07a5f;
+    --white: #ffffff;
+    --text: #2c3e50;
+    --text-light: #5a6a7a;
+    --card-bg: #ffffff;
+    --border: #e8e0d4;
+    --nap-bg: #f8f0ff;
+    --nap-border: #c090d0;
+    --tip-bg: #edf6f8;
+    --grocery-green: #3a7a4a;
+    --grocery-light: #f0f8f2;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--sand);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #1a4a5a 0%, #1a7a8a 50%, #2a8a7a 100%);
+    padding: 28px 20px 22px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .header-icon { font-size: 28px; margin-bottom: 4px; }
+  .header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+  .header .subtitle {
+    font-size: 11px;
+    color: var(--sunset-light);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .header .dates {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 6px;
+  }
+
+  /* TABS */
+  .tab-bar {
+    display: flex;
+    background: #1a4a5a;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: none;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { color: rgba(255,255,255,0.85); }
+  .tab-btn.active {
+    color: var(--white);
+    border-bottom-color: var(--sunset);
+    font-weight: 600;
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* DAY DROPDOWN ACCORDION */
+  .day-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .day-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    background: var(--card-bg);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .day-toggle:hover { background: #faf8f4; }
+  .day-toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .day-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--ocean), var(--ocean-light));
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .day-info { text-align: left; }
+  .day-date {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+  .day-theme {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 1px;
+  }
+  .chevron {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    color: var(--text-light);
+    flex-shrink: 0;
+  }
+  .day-section.open .chevron { transform: rotate(180deg); }
+
+  .day-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .day-section.open .day-body { max-height: 5000px; }
+  .day-body-inner { padding: 0 18px 18px; }
+
+  /* ACTIVITY BLOCKS */
+  .activity {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0ece4;
+  }
+  .activity:last-child { border-bottom: none; }
+  .time {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ocean-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+  .act-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ocean);
+    margin-bottom: 3px;
+  }
+  .act-desc {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* ADDRESS LINKS */
+  .addr-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--ocean-light);
+    text-decoration: none;
+    margin-top: 5px;
+    padding: 4px 10px;
+    background: #f0f7fa;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-weight: 500;
+    word-break: break-word;
+  }
+  .addr-link:hover { background: #dceef4; color: var(--ocean); }
+  .addr-link svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* TIP & NAP BOXES */
+  .tip-box {
+    background: var(--tip-bg);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #2a5a6a;
+    line-height: 1.45;
+  }
+  .tip-box strong { color: var(--ocean); }
+  .nap-box {
+    background: var(--nap-bg);
+    border-left: 3px solid var(--nap-border);
+    border-radius: 0 8px 8px 0;
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6a4a7a;
+    line-height: 1.45;
+  }
+  .nap-box strong { color: #5a3a6a; }
+
+  /* RESTAURANT HIGHLIGHT */
+  .restaurant-card {
+    background: linear-gradient(135deg, #fef9f0, #fdf5e6);
+    border: 1px solid #e8d8b8;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 8px;
+  }
+  .restaurant-card .r-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #8a6a2a;
+    margin-bottom: 6px;
+  }
+  .restaurant-card .r-details {
+    font-size: 12px;
+    color: #6a5a3a;
+    line-height: 1.5;
+  }
+
+  /* OPTION BOXES */
+  .option-box {
+    background: #f8faf0;
+    border: 1px solid #d0d8c0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 6px;
+  }
+  .option-box .opt-name {
+    font-weight: 600;
+    color: #3a5a2a;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  .option-box .opt-details {
+    font-size: 12px;
+    color: #5a6a4a;
+    line-height: 1.45;
+  }
+
+  /* GROCERY LIST TAB */
+  .grocery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .grocery-header h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    color: var(--ocean);
+  }
+  .grocery-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .grocery-input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--white);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .grocery-input:focus { border-color: var(--ocean-light); }
+  .grocery-input::placeholder { color: #b0a898; }
+  .grocery-add-btn {
+    padding: 12px 20px;
+    background: var(--ocean);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .grocery-add-btn:hover { background: var(--ocean-light); }
+
+  .grocery-list { list-style: none; }
+  .grocery-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--white);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .grocery-item.checked {
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+  .grocery-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--ocean);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .grocery-item-text {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .grocery-delete {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: #f8e8e8;
+    color: #c85858;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .grocery-delete:hover { background: #f0d0d0; }
+  .grocery-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+    font-size: 14px;
+  }
+  .grocery-clear-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 16px;
+    background: none;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .grocery-clear-btn:hover { border-color: #c85858; color: #c85858; }
+
+  /* PIN ICON SVG */
+  .pin-svg { fill: currentColor; }
+
+  /* RESPONSIVE */
+  @media (max-width: 400px) {
+    .header h1 { font-size: 19px; }
+    .tab-btn { padding: 10px 12px; font-size: 11px; }
+    .content { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">☀️</div>
+  <h1>KK's 1st Birthday Itinerary</h1>
+  <div class="subtitle">Newport Beach, California</div>
+  <div class="dates">May 21 – 26, 2026 · The Lewis Family & Grandparents</div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="day1">Day 1</button>
+  <button class="tab-btn" data-tab="day2">Day 2</button>
+  <button class="tab-btn" data-tab="day3">Day 3</button>
+  <button class="tab-btn" data-tab="day4">Day 4</button>
+  <button class="tab-btn" data-tab="day5">Day 5</button>
+  <button class="tab-btn" data-tab="day6">Day 6</button>
+  <button class="tab-btn" data-tab="grocery" style="color:var(--sunset-light);">🛒 Grocery</button>
+</div>
+
+<div class="content">
+
+<!-- ============ DAY 1 ============ -->
+<div class="tab-content active" id="day1">
+  <div class="day-section open">
+    <button class="day-toggle" onclick="toggleDay(this)">
+      <div class="day-toggle-left">
+        <div class="day-num">1</div>
+        <div class="day-info">
+          <div class="day-date">Thursday, May 21</div>
+          <div class="day-theme">Arrival, Groceries & First Sunset</div>
+        </div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="day-body">
+      <div class="day-body-inner">
+
+        <div class="activity">
+          <div class="time">11:00 AM — Arrive at John Wayne Airport</div>
+          <div class="act-desc">Pick up the Lincoln Navigator from the rental counter. SNA is small and easy — you'll be out quickly.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=18601+Airport+Way,+Santa+Ana,+CA+92707" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>18601 Airport Way, Santa Ana, CA 92707</a>
+        </div>
+
+        <div class="activity">
+          <div class="time">11:30 AM – 1:30 PM — Grocery Run & Lunch</div>
+          <div class="act-title">Stock the Villa Kitchen for the Week</div>
+          <div class="option-box">
+            <div class="opt-name">Option A: Walmart Supercenter (Recommended)</div>
+            <div class="opt-details">10 min from airport · 12 min to resort · Open 6 AM – 11 PM daily</div>
+            <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=16555+Von+Karman+Ave,+Irvine,+CA+92606" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>16555 Von Karman Ave, Irvine, CA 92606</a>
+          </div>
+          <div class="option-box">
+            <div class="opt-name">Option B: Costco Wholesale</div>
+            <div class="opt-details">12 min from airport · 15 min to resort · Open 10 AM – 8:30 PM (Thu)</div>
+            <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=2700+Park+Ave+%231001B,+Tustin,+CA+92782" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>2700 Park Ave #1001B, Tustin, CA 92782</a>
+          </div>
+          <div class="act-desc" style="margin-top:8px;">Grab lunch at <strong>In-N-Out Burger</strong> — a California must-try.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=3810+Barranca+Pkwy,+Irvine,+CA+92606" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>In-N-Out: 3810 Barranca Pkwy, Irvine</a>
+          <div class="tip-box"><strong>Tip:</strong> Villas have full kitchens — stovetop, oven, dishwasher, full-size fridge. Cooking breakfast in saves time and money with a big group.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">2:00 PM – 4:00 PM — Head to Resort & Unwind</div>
+          <div class="act-title">Marriott's Newport Coast Villas</div>
+          <div class="act-desc">Unload groceries, relax, explore the resort — 5 heated pools, splash pad, fire pits, putting green, ocean views. Check-in at 4:00 PM.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=23000+Newport+Coast+Dr,+Newport+Coast,+CA+92657" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>23000 Newport Coast Dr, Newport Coast, CA 92657</a>
+        </div>
+
+        <div class="activity">
+          <div class="time">5:00 PM – 7:30 PM — Sunset Dinner</div>
+          <div class="act-title">Beachcomber Café at Crystal Cove</div>
+          <div class="act-desc">Iconic oceanfront restaurant on the sand. Arrive by 5 PM for the daily Martini Flag raising ceremony at sunset. Seafood-forward, great cocktails at The Bootlegger tiki bar.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=15+Crystal+Cove,+Newport+Beach,+CA+92657" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>15 Crystal Cove, Newport Beach, CA 92657</a>
+          <div class="tip-box"><strong>Tip:</strong> Reserve at thebeachcombercafe.com. Request patio seating. Take the resort shuttle or park at Los Trancos lot ($15/vehicle).</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DAY 2 ============ -->
+<div class="tab-content" id="day2">
+  <div class="day-section open">
+    <button class="day-toggle" onclick="toggleDay(this)">
+      <div class="day-toggle-left">
+        <div class="day-num">2</div>
+        <div class="day-info">
+          <div class="day-date">Friday, May 22</div>
+          <div class="day-theme">San Diego Zoo</div>
+        </div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="day-body">
+      <div class="day-body-inner">
+
+        <div class="activity">
+          <div class="time">7:30 – 8:30 AM — Breakfast & Depart</div>
+          <div class="act-desc">Quick villa breakfast. Pack diaper bag, stroller, snacks, sunscreen, layers. <strong>Depart by 8:30 AM.</strong> ~1 hr 20 min via I-5 South.</div>
+          <div class="nap-box"><strong>Nap strategy:</strong> She'll fall asleep ~10 AM in the car. Arrive at the zoo ~9:50–10:00 AM. Let her finish her nap in the stroller while adults ride the Guided Bus Tour.</div>
+          <div class="tip-box"><strong>Tip:</strong> Each couple takes their own vehicle for flexibility.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">~10:00 AM — Arrive at San Diego Zoo</div>
+          <div class="act-title">San Diego Zoo — Balboa Park</div>
+          <div class="act-desc"><strong>Hours:</strong> Opens 9 AM · <strong>Tickets:</strong> Buy 1-Day Pass online at zoo.sandiegozoo.org · <strong>Kids 2 & under:</strong> FREE · <strong>Parking:</strong> $16/vehicle</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=2920+Zoo+Drive,+San+Diego,+CA+92108" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>2920 Zoo Drive, San Diego, CA 92108</a>
+        </div>
+
+        <div class="activity">
+          <div class="time">11:30 AM – 2:30 PM — Prime Zoo Time</div>
+          <div class="act-desc"><strong>Wildlife Explorers Basecamp</strong> — 3+ acres of interactive play, perfect for a 1-year-old. Walk the highlights: polar bears, elephants, giraffes, koalas, Panda Ridge. Lunch at Albert's or grab-and-go. <strong>Skyfari Aerial Tram</strong> for views.</div>
+          <div class="tip-box"><strong>Tip:</strong> Download the San Diego Zoo app. Bring a stroller that handles hills. Friday is much less crowded than Saturday of Memorial Day weekend.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">2:30 PM — Head to the Car</div>
+          <div class="nap-box"><strong>Nap strategy:</strong> Wrap up by 2:30 PM. She'll catch her 2:45 PM nap on the 1 hr 20 min drive home.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">5:00 PM – Evening — Resort Night</div>
+          <div class="act-desc">Relax after a big day. Cook dinner in the villa or order from La Vista Pool Bar & Grill (on-site). Fire pits after the baby goes down.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DAY 3 ============ -->
+<div class="tab-content" id="day3">
+  <div class="day-section open">
+    <button class="day-toggle" onclick="toggleDay(this)">
+      <div class="day-toggle-left">
+        <div class="day-num">3</div>
+        <div class="day-info">
+          <div class="day-date">Saturday, May 23</div>
+          <div class="day-theme">Balboa Island, Harbor Cruise & RH Ocean Grill</div>
+        </div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="day-body">
+      <div class="day-body-inner">
+
+        <div class="activity">
+          <div class="time">8:00 – 9:30 AM — Villa Breakfast</div>
+          <div class="act-desc">Relaxed breakfast at the villa.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">9:30 AM — Drive to Balboa Island</div>
+          <div class="act-title">Balboa Island & Fun Zone</div>
+          <div class="act-desc">Stroll Marine Ave, grab a frozen chocolate banana from Sugar 'n Spice. Browse the shops.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=300+Marine+Ave,+Balboa+Island,+CA+92662" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>300 Marine Ave, Balboa Island, CA 92662</a>
+          <div class="nap-box"><strong>10:00 AM — Nap #1:</strong> Baby naps in the stroller on the flat, quiet boardwalk while adults explore.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">11:30 AM – 12:30 PM — Ferry & Fun Zone</div>
+          <div class="act-desc">Take the Balboa Island Ferry ($2/person) to the Peninsula. Ferris wheel, arcade, shops at the Fun Zone. Lunch at Ruby's Diner on Balboa Pier.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=600+E+Bay+Ave,+Balboa,+CA+92661" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Balboa Fun Zone: 600 E Bay Ave, Balboa, CA 92661</a>
+        </div>
+
+        <div class="activity">
+          <div class="time">1:00 – 2:30 PM — Duffy Boat Cruise</div>
+          <div class="act-title">Duffy Electric Boat — Newport Harbor</div>
+          <div class="act-desc">Rent for 1.5–2 hrs. Seats 12 — whole group fits. Cruise past mansions, mega yachts, sea lions. Easy to drive (5 mph). Bring snacks & drinks.</div>
+          <div class="tip-box"><strong>Tip:</strong> Book at duffyboats.com. ~$150–200/hr. Must be 21+ to rent. Life jackets provided for all ages.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">2:30 PM — Head Back</div>
+          <div class="nap-box"><strong>2:45 PM — Nap #2:</strong> She naps in the car on the drive back (20 min). Adults freshen up for dinner.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">5:30 – 8:00 PM — Special Dinner</div>
+          <div class="restaurant-card">
+            <div class="r-name">RH Ocean Grill — Fashion Island</div>
+            <div class="r-details">Rooftop dining, 4th floor of RH. Glass atrium, olive trees, chandeliers, fountain, coastal views. Seafood & caviar, hearth classics. Smart casual.<br><strong>Hours:</strong> Sat 11 AM – 10 PM · <strong>Reserve:</strong> OpenTable<br><strong>Budget:</strong> $$$ (Entrées $35–65)</div>
+            <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=1101+Newport+Center+Dr,+Newport+Beach,+CA+92660" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>1101 Newport Center Dr, Newport Beach, CA 92660</a>
+          </div>
+          <div class="tip-box"><strong>Tip:</strong> Book ASAP — hard to get. After dinner, stroll Fashion Island under the string lights.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DAY 4 ============ -->
+<div class="tab-content" id="day4">
+  <div class="day-section open">
+    <button class="day-toggle" onclick="toggleDay(this)">
+      <div class="day-toggle-left">
+        <div class="day-num">4</div>
+        <div class="day-info">
+          <div class="day-date">Sunday, May 24</div>
+          <div class="day-theme">Beach, Laguna Beach & Nobu</div>
+        </div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="day-body">
+      <div class="day-body-inner">
+
+        <div class="activity">
+          <div class="time">7:30 – 9:30 AM — Early Beach Morning</div>
+          <div class="act-title">Little Corona del Mar Beach & Tide Pools</div>
+          <div class="act-desc">Calm waters, tide pools, no-stairs access. Baby plays in the sand, grandparents explore tide pools.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=Ocean+Blvd+%26+Poppy+Ave,+Corona+del+Mar,+CA+92625" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Ocean Blvd & Poppy Ave, Corona del Mar, CA 92625</a>
+          <div class="tip-box"><strong>Tip:</strong> Arrive early for parking. Bring pop-up shade tent. Low tide = best tide pools.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">9:45 AM — Back to Resort</div>
+          <div class="nap-box"><strong>10:00 AM — Nap #1:</strong> Villa nap. Adults enjoy pool or relax on the balcony with coffee.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">11:30 AM – 2:30 PM — Crystal Cove & Laguna Beach</div>
+          <div class="act-title">Explore Crystal Cove & Stroll Laguna Beach</div>
+          <div class="act-desc">Walk the Crystal Cove Historic District (1930s cottages, bluff trails). Then drive to Laguna Beach for Heisler Park — flat, scenic, stroller-friendly. Lunch in downtown Laguna.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=375+Cliff+Dr,+Laguna+Beach,+CA+92651" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Heisler Park: 375 Cliff Dr, Laguna Beach, CA 92651</a>
+        </div>
+
+        <div class="activity">
+          <div class="time">2:30 PM — Back to Resort</div>
+          <div class="nap-box"><strong>2:45 PM — Nap #2:</strong> Villa nap. Adults rest and get ready for Nobu.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">5:30 – 8:00 PM — Nobu Dinner</div>
+          <div class="restaurant-card">
+            <div class="r-name">Nobu Newport Beach — Lido Marina Village</div>
+            <div class="r-details">Two-story waterfront Japanese restaurant. Yellowtail Jalapeño, Black Cod Miso, Omakase tasting menu. Harbor views, indoor/outdoor dining.<br><strong>Hours:</strong> Sun 12–3 PM, 5–9 PM · <strong>Reserve:</strong> noburestaurants.com/newportbeach<br><strong>Budget:</strong> $$$$ ($80–150/person) · 5+ guests require CC hold</div>
+            <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=3450+Via+Oporto,+Newport+Beach,+CA+92663" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>3450 Via Oporto, Newport Beach, CA 92663</a>
+          </div>
+          <div class="act-desc" style="margin-top:6px;">After dinner, stroll Lido Marina Village — boutiques, galleries, harbor views.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DAY 5 ============ -->
+<div class="tab-content" id="day5">
+  <div class="day-section open">
+    <button class="day-toggle" onclick="toggleDay(this)">
+      <div class="day-toggle-left">
+        <div class="day-num">5</div>
+        <div class="day-info">
+          <div class="day-date">Monday, May 25 (Memorial Day)</div>
+          <div class="day-theme">Resort Day, Pool & Fashion Island</div>
+        </div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="day-body">
+      <div class="day-body-inner">
+
+        <div class="activity">
+          <div class="time">8:00 – 9:30 AM — Villa Breakfast</div>
+          <div class="act-desc">Leisurely breakfast. No rush. Coffee on the balcony with ocean views one last full day.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">9:30 AM — Splash Pad & Pool</div>
+          <div class="act-desc">Head to the Coast Pool with the splash pad (open 10 AM – sunset). Baby plays in the water before nap.</div>
+          <div class="nap-box"><strong>10:00 AM — Nap #1:</strong> Back to the villa. Grandparents enjoy pool, spa, or resort grounds.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">11:30 AM – 2:30 PM — Pool & Resort Time</div>
+          <div class="act-desc">Back to the pool! Lunch from La Vista Pool Bar & Grill (on-site). Putting green, game room, bluff trail walk.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">2:30 PM</div>
+          <div class="nap-box"><strong>2:45 PM — Nap #2:</strong> Villa nap. Adults rest, start packing, freshen up.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">3:30 – 5:30 PM — Fashion Island Shopping</div>
+          <div class="act-title">Fashion Island</div>
+          <div class="act-desc">100+ stores, ocean views, koi ponds, fountains, string lights. Nordstrom, Bloomingdale's, luxury boutiques. Free parking.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=401+Newport+Center+Dr,+Newport+Beach,+CA+92660" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>401 Newport Center Dr, Newport Beach, CA 92660</a>
+        </div>
+
+        <div class="activity">
+          <div class="time">6:00 – 8:00 PM — Final Night Dinner</div>
+          <div class="act-title">Last Supper on the Coast</div>
+          <div class="act-desc">
+            <strong>Javier's</strong> — Upscale Mexican, beautiful patio, 5 min from resort<br>
+            <strong>Mastro's Ocean Club</strong> — Steakhouse, ocean views, dressy<br>
+            <strong>R+D Kitchen</strong> — Fashion Island, elevated American<br>
+            <strong>Villa BBQ</strong> — Cook on the resort grill, gather around the fire pit
+          </div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=7832+E+Coast+Hwy,+Newport+Beach,+CA+92657" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Javier's: 7832 E Coast Hwy, Newport Beach</a>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=8112+E+Coast+Hwy,+Newport+Beach,+CA+92657" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Mastro's: 8112 E Coast Hwy, Newport Beach</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DAY 6 ============ -->
+<div class="tab-content" id="day6">
+  <div class="day-section open">
+    <button class="day-toggle" onclick="toggleDay(this)">
+      <div class="day-toggle-left">
+        <div class="day-num">6</div>
+        <div class="day-info">
+          <div class="day-date">Tuesday, May 26</div>
+          <div class="day-theme">Departure Day</div>
+        </div>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="day-body">
+      <div class="day-body-inner">
+
+        <div class="activity">
+          <div class="time">6:00 AM — Wake Up & Pack</div>
+          <div class="act-desc">Early morning. Coffee in the villa, one last ocean view from the balcony.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">7:00 AM — Check Out</div>
+          <div class="act-desc">Load luggage. 15-minute drive to SNA.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">7:30 AM — Arrive at John Wayne Airport</div>
+          <div class="act-desc">Return rental car, check in. SNA is compact — 1.5 hrs before departure is plenty.</div>
+          <a class="addr-link" href="https://www.google.com/maps/dir/?api=1&destination=18601+Airport+Way,+Santa+Ana,+CA+92707" target="_blank"><svg viewBox="0 0 24 24" class="pin-svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>18601 Airport Way, Santa Ana, CA 92707</a>
+          <div class="tip-box"><strong>Tip:</strong> Return Navigator with full tank. Gas on Jamboree Rd near the airport. TSA is typically fast at SNA.</div>
+        </div>
+
+        <div class="activity">
+          <div class="time">9:00 AM — Wheels Up ✈️</div>
+          <div class="act-desc">Head home with a camera roll full of memories.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GROCERY TAB ============ -->
+<div class="tab-content" id="grocery">
+  <div class="grocery-header">
+    <h2>🛒 Grocery List</h2>
+  </div>
+  <div class="grocery-input-row">
+    <input type="text" class="grocery-input" id="groceryInput" placeholder="Add an item..." onkeypress="if(event.key==='Enter')addGroceryItem()">
+    <button class="grocery-add-btn" onclick="addGroceryItem()">Add</button>
+  </div>
+  <ul class="grocery-list" id="groceryList"></ul>
+  <div class="grocery-empty" id="groceryEmpty">Your grocery list is empty.<br>Add items above to get started!</div>
+  <button class="grocery-clear-btn" id="groceryClear" onclick="clearGroceryList()" style="display:none;">Clear All Items</button>
+</div>
+
+</div><!-- end .content -->
+
+<script>
+// TAB SWITCHING
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// DAY ACCORDION
+function toggleDay(btn) {
+  btn.closest('.day-section').classList.toggle('open');
+}
+
+// GROCERY LIST — localStorage persistence
+const GROCERY_KEY = 'kk_grocery_list';
+
+function loadGroceryList() {
+  const items = JSON.parse(localStorage.getItem(GROCERY_KEY) || '[]');
+  renderGroceryList(items);
+}
+
+function saveGroceryList(items) {
+  localStorage.setItem(GROCERY_KEY, JSON.stringify(items));
+}
+
+function getGroceryItems() {
+  return JSON.parse(localStorage.getItem(GROCERY_KEY) || '[]');
+}
+
+function addGroceryItem() {
+  const input = document.getElementById('groceryInput');
+  const text = input.value.trim();
+  if (!text) return;
+  const items = getGroceryItems();
+  items.push({ text, checked: false, id: Date.now() });
+  saveGroceryList(items);
+  renderGroceryList(items);
+  input.value = '';
+  input.focus();
+}
+
+function toggleGroceryItem(id) {
+  const items = getGroceryItems();
+  const item = items.find(i => i.id === id);
+  if (item) item.checked = !item.checked;
+  saveGroceryList(items);
+  renderGroceryList(items);
+}
+
+function deleteGroceryItem(id) {
+  const items = getGroceryItems().filter(i => i.id !== id);
+  saveGroceryList(items);
+  renderGroceryList(items);
+}
+
+function clearGroceryList() {
+  if (confirm('Clear all grocery items?')) {
+    saveGroceryList([]);
+    renderGroceryList([]);
+  }
+}
+
+function renderGroceryList(items) {
+  const list = document.getElementById('groceryList');
+  const empty = document.getElementById('groceryEmpty');
+  const clearBtn = document.getElementById('groceryClear');
+
+  if (items.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    clearBtn.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  clearBtn.style.display = 'block';
+
+  // Sort: unchecked first
+  const sorted = [...items].sort((a, b) => a.checked - b.checked);
+
+  list.innerHTML = sorted.map(item => `
+    <li class="grocery-item ${item.checked ? 'checked' : ''}">
+      <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleGroceryItem(${item.id})">
+      <span class="grocery-item-text">${escapeHtml(item.text)}</span>
+      <button class="grocery-delete" onclick="deleteGroceryItem(${item.id})">×</button>
+    </li>
+  `).join('');
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Load on page ready
+loadGroceryList();
+</script>
+
+</body>
+</html>
